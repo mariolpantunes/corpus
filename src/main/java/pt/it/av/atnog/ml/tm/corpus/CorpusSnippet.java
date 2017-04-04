@@ -38,7 +38,7 @@ public class CorpusSnippet implements Corpus {
         /**
          * CorpusIterator constructor.
          *
-         * @param ngram
+         * @param it
          */
         public CorpusIterator(final Iterator it) {
             this.it = it;
