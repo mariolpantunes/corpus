@@ -10,29 +10,29 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * Wraps a Corpus class and provides a cache system based on disk files.
+ * Wraps a Corpus class and provides a pCache system based on disk files.
  *
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 1.0
  */
 public class CorpusDiskCache implements Corpus {
     private final Corpus c;
-    private final Path cache;
+    private final Path pCache;
 
     /**
-     * Corpus disk cache constructor
+     * Corpus disk pCache constructor
      *
      * @param c     another corpus class
-     * @param cache directory where the cache is written/read
+     * @param cache directory where the pCache is written/read
      */
     public CorpusDiskCache(Corpus c, Path cache) {
         this.c = c;
-        this.cache = cache;
+        this.pCache = cache;
     }
 
     @Override
     public Iterator<String> iterator(NGram ngram) {
-        Path file = cache.resolve(ngram + ".gz");
+        Path file = pCache.resolve(ngram + ".gz");
         if (Files.isReadable(file))
             return new CorpusCacheIterator(file);
         else
@@ -40,14 +40,14 @@ public class CorpusDiskCache implements Corpus {
     }
 
     /**
-     * Implements a corpus iterator that reads the corpus from the cache (disk file).
+     * Implements a corpus iterator that reads the corpus from the pCache (disk file).
      */
     private class CorpusCacheIterator implements Iterator<String> {
         private BufferedReader in;
         private String line = null;
 
         /**
-         * Corpus cache iterator constructor.
+         * Corpus pCache iterator constructor.
          *
          * @param file the file that contains the corpus content
          */
@@ -95,7 +95,7 @@ public class CorpusDiskCache implements Corpus {
     }
 
     /**
-     * Implements a corpus iterator that consomes content from the original corpus and store it in the cache.
+     * Implements a corpus iterator that consumes content from the original corpus and store it in the pCache.
      */
     private class CorpusIterator implements Iterator<String> {
         private final Iterator<String> it;
@@ -106,7 +106,7 @@ public class CorpusDiskCache implements Corpus {
          * Corpus iterator constructor.
          *
          * @param it   iterator from the original corpus with the relevant content
-         * @param file file in the cache that will hold the content
+         * @param file file in the pCache that will hold the content
          */
         public CorpusIterator(Iterator<String> it, Path file) {
             this.it = it;
