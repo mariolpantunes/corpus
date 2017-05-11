@@ -22,6 +22,6 @@ public class CorpusLimit implements Corpus{
 
     @Override
     public Iterator<String> iterator(NGram ngram) {
-        return new LimitIterator(c.iterator(ngram), limit);
+        return new LimitIterator<>(c.iterator(ngram), limit);
     }
 }

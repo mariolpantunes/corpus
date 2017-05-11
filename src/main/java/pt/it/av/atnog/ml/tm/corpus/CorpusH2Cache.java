@@ -3,12 +3,13 @@ package pt.it.av.atnog.ml.tm.corpus;
 import pt.it.av.atnog.ml.tm.ngrams.NGram;
 
 import java.io.BufferedReader;
-import java.io.Reader;
+import java.io.StringReader;
 import java.nio.file.Path;
 import java.sql.*;
 import java.util.Iterator;
 
 import org.h2.jdbcx.JdbcDataSource;
+import pt.it.av.atnog.utils.structures.iterator.BRIterator;
 
 /**
  * Wraps a Corpus class and provides a cache system based on disk files.
@@ -41,7 +42,7 @@ public class CorpusH2Cache implements Corpus, AutoCloseable{
         conn.commit();
 
         select = conn.prepareStatement("SELECT text FROM corpus WHERE query = ? ORDER BY date DESC LIMIT 1");
-        insert = conn.prepareStatement("");
+        insert = conn.prepareStatement("INSERT INTO corpus VALUES(?,?,?)");
     }
 
 
@@ -53,9 +54,9 @@ public class CorpusH2Cache implements Corpus, AutoCloseable{
             select.setString(1, ngram.toString());
             ResultSet rs = select.executeQuery();
             if (rs == null || !rs.first())
-                rv = new CorpusIterator();
+                rv = new CorpusIterator(c.iterator(ngram), ngram);
             else
-                rv = new CorpusH2Iterator(rs.getCharacterStream(1));
+                rv = new BRIterator(new BufferedReader(rs.getCharacterStream(1)));
             //rs.close();
         } catch (Exception e) {
             //should not happen
@@ -73,35 +74,54 @@ public class CorpusH2Cache implements Corpus, AutoCloseable{
         conn.close();
     }
 
-    private class CorpusH2Iterator implements Iterator<String> {
-        private BufferedReader br;
-
-        public CorpusH2Iterator(Reader r) {
-            br = new BufferedReader(r);
-        }
-
-
-        @Override
-        public boolean hasNext() {
-            return false;
-        }
-
-        @Override
-        public String next() {
-            return null;
-        }
-    }
-
     private class CorpusIterator implements Iterator<String> {
+        private final Iterator<String> it;
+        private final NGram ngram;
+        private final StringBuilder sb;
+        private boolean done;
+
+        /**
+         * Corpus iterator constructor.
+         *
+         * @param it   iterator from the original corpus with the relevant content
+         */
+        public CorpusIterator(Iterator<String> it, NGram ngram) {
+            this.it = it;
+            this.ngram = ngram;
+            sb = new StringBuilder();
+            done = false;
+        }
 
         @Override
         public boolean hasNext() {
-            return false;
+            boolean rv = true;
+
+            if (!it.hasNext()) {
+                if(!done) {
+                    try {
+                        System.err.println(sb.toString());
+                        insert.setString(1, ngram.toString());
+                        insert.setDate(2, new Date(System.currentTimeMillis()));
+                        insert.setCharacterStream(3, new StringReader(sb.toString()));
+                        insert.execute();
+                        conn.commit();
+                        done = true;
+                    } catch (SQLException e) {
+                        //should not happen
+                        e.printStackTrace();
+                    }
+                }
+                rv = false;
+            }
+            return rv;
         }
 
         @Override
         public String next() {
-            return null;
+            String rv = it.next();
+            sb.append(rv);
+            sb.append(System.getProperty("line.separator"));
+            return rv;
         }
     }
 }

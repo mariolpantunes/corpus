@@ -40,7 +40,7 @@ public class CorpusSnippet implements Corpus {
          *
          * @param it
          */
-        public CorpusIterator(final Iterator it) {
+        public CorpusIterator(final Iterator<SearchEngine.Result> it) {
             this.it = it;
         }
 
