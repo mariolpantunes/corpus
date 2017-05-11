@@ -99,7 +99,6 @@ public class CorpusH2Cache implements Corpus, AutoCloseable{
             if (!it.hasNext()) {
                 if(!done) {
                     try {
-                        System.err.println(sb.toString());
                         insert.setString(1, ngram.toString());
                         insert.setDate(2, new Date(System.currentTimeMillis()));
                         insert.setCharacterStream(3, new StringReader(sb.toString()));

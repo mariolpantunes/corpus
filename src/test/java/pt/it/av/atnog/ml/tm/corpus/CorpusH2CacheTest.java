@@ -41,17 +41,19 @@ public class CorpusH2CacheTest {
             assertTrue(it.next().equals(l.get(idx++)));
         assertTrue(idx == l.size());
 
+        it = c.iterator(NGram.Unigram("UNIT_TEST_CORPUS_DISK_CACHE"));
+
         // Reads the cache
         idx = 0;
         while (it.hasNext())
             assertTrue(it.next().equals(l.get(idx++)));
         assertTrue(idx == l.size());
 
-        try {
+        /*try {
             Files.delete(Paths.get(tmp).resolve("corpus.mv.db"));
             Files.delete(Paths.get(tmp).resolve("corpus.trace.db"));
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 }
