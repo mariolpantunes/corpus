@@ -55,12 +55,12 @@ public class CorpusWeb implements Corpus {
             String rv;
 
             try {
-                String url = it.next().url;
+                String uri = it.next().uri;
                 Document d;
-                if (!url.contains("http://") && !url.contains("https://"))
-                    d = Jsoup.connect("http://" + url).get();
+                if (!uri.contains("http://") && !uri.contains("https://"))
+                    d = Jsoup.connect("http://" + uri).get();
                 else
-                    d = Jsoup.connect(url).get();
+                    d = Jsoup.connect(uri).get();
                 rv = d.text();
             } catch (IOException e) {
                 e.printStackTrace();

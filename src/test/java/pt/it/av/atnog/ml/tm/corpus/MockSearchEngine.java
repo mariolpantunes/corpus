@@ -1,5 +1,6 @@
 package pt.it.av.atnog.ml.tm.corpus;
 
+import pt.it.av.atnog.utils.Utils;
 import pt.it.av.atnog.utils.ws.search.SearchEngine;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.List;
  * @author <a href="mailto:mariolpantunes@gmail.com">Mário Antunes</a>
  * @version 1.0
  */
-public class MockSearchEngine extends SearchEngine {
+public class MockSearchEngine implements SearchEngine {
     List<SearchEngine.Result> l = new ArrayList<>(3);
 
     /**
@@ -23,6 +24,11 @@ public class MockSearchEngine extends SearchEngine {
         l.add(new SearchEngine.Result("banana", "banana", "banana"));
         l.add(new SearchEngine.Result("apple", "apple", "apple"));
         l.add(new SearchEngine.Result("peach", "peach", "peach"));
+    }
+
+    @Override
+    public List<Result> search(String s) {
+        return l;
     }
 
     @Override
