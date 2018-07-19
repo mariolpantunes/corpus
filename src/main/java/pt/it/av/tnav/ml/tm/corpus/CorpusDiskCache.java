@@ -1,8 +1,12 @@
-package pt.it.av.atnog.ml.tm.corpus;
+package pt.it.av.tnav.ml.tm.corpus;
 
-import pt.it.av.atnog.ml.tm.ngrams.NGram;
+import pt.it.av.tnav.ml.tm.ngrams.NGram;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
@@ -33,10 +37,12 @@ public class CorpusDiskCache implements Corpus {
   @Override
   public Iterator<String> iterator(NGram ngram) {
     Path file = pCache.resolve(ngram + ".gz");
-    if (Files.isReadable(file))
+    if (Files.isReadable(file)) {
       return new CorpusCacheIterator(file);
-    else
+    }
+    else {
       return new CorpusIterator(c.iterator(ngram), file);
+    }
   }
 
   /**
@@ -51,7 +57,7 @@ public class CorpusDiskCache implements Corpus {
      *
      * @param file the file that contains the corpus content
      */
-    public CorpusCacheIterator(Path file) {
+    private CorpusCacheIterator(Path file) {
       try {
         this.in = new BufferedReader(new InputStreamReader(new GZIPInputStream(
             Files.newInputStream(file)), "UTF-8"));
@@ -114,7 +120,7 @@ public class CorpusDiskCache implements Corpus {
      * @param it   iterator from the original corpus with the relevant content
      * @param file file in the pCache that will hold the content
      */
-    public CorpusIterator(Iterator<String> it, Path file) {
+    private CorpusIterator(Iterator<String> it, Path file) {
       this.it = it;
       if (it.hasNext()) {
         try {
