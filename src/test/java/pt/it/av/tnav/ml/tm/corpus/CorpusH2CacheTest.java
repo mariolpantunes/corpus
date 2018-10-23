@@ -1,6 +1,8 @@
 package pt.it.av.tnav.ml.tm.corpus;
 
 import pt.it.av.tnav.ml.tm.ngrams.NGram;
+import pt.it.av.tnav.utils.ws.search.MockSearchEngine;
+import pt.it.av.tnav.utils.ws.search.SearchEngine;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,6 +24,11 @@ public class CorpusH2CacheTest {
    */
   @org.junit.Test
   public void test() throws Exception {
+    List<SearchEngine.Result> lsr = new ArrayList<>();
+    lsr.add(new SearchEngine.Result("banana", "banana", "banana"));
+    lsr.add(new SearchEngine.Result("apple", "apple", "apple"));
+    lsr.add(new SearchEngine.Result("peach", "peach", "peach"));
+
     List<String> l = new ArrayList<>(3);
     l.add("banana");
     l.add("apple");
@@ -29,7 +36,7 @@ public class CorpusH2CacheTest {
 
     String tmp = System.getProperty("java.io.tmpdir");
     Path db = Paths.get(tmp).resolve("corpus");
-    Corpus c = new CorpusH2Cache(new CorpusSnippet(new MockSearchEngine()), db);
+    Corpus c = new CorpusH2Cache(new CorpusSnippet(new MockSearchEngine(lsr)), db);
 
     Iterator<String> it = c.iterator(NGram.Unigram("UNIT_TEST_CORPUS_DISK_CACHE"));
 
